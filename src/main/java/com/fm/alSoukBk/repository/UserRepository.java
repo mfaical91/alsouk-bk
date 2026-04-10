@@ -3,6 +3,9 @@ package com.fm.alSoukBk.repository;
 
 import com.fm.alSoukBk.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -11,4 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     boolean existsByUsernameAndEmail(String username, String email);
     boolean existsByUsername(String username); //todo difference entre les deux find and existe
+
+
 }

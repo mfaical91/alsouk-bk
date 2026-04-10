@@ -3,6 +3,8 @@ package com.fm.alSoukBk.service;
 import com.fm.alSoukBk.model.Annonce;
 import com.fm.alSoukBk.repository.AnnonceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,6 +59,11 @@ public class AnnonceServiceImpl implements AnnonceService {
                 .orElseThrow(() -> new RuntimeException("Annonce non trouvée"));
         annonce.setActive(false);
         return annonceRepository.save(annonce);
+    }
+
+    @Override
+    public Page<Annonce> getAnnoncesByRegionCode(String regionCode, Pageable pageable) {
+        return annonceRepository.findByRegionCode(regionCode, pageable);
     }
 
 }

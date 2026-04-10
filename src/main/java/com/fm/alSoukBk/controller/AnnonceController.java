@@ -6,6 +6,10 @@ import com.fm.alSoukBk.model.User;
 import com.fm.alSoukBk.service.AnnonceService;
 import com.fm.alSoukBk.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +40,7 @@ public class AnnonceController {
             @RequestParam String description,
             @RequestParam Double price,
             @RequestParam String location,
+            @RequestParam String regionCode,
             @RequestParam String category,
             @RequestParam("image") MultipartFile imageFile,
             @AuthenticationPrincipal UserDetails user
@@ -52,6 +57,7 @@ public class AnnonceController {
         annonce.setDescription(description);
         annonce.setPrice(price);
         annonce.setLocation(location);
+        annonce.setRegionCode(regionCode);
         annonce.setCategory(category);
         annonce.setImageUrl("/uploads/" + filename); // à afficher plus tard
 
@@ -79,6 +85,16 @@ public class AnnonceController {
     public ResponseEntity<Annonce> getAnnonceById(@PathVariable Long id) {
         Annonce annonce = annonceService.getAnnonceById(id);
         return ResponseEntity.ok(annonce);
+    }
+
+    // ✅ Récupérer les annonces par regionCode avec pagination
+    @GetMapping("/region/{regionCode}")
+    public ResponseEntity<Page<Annonce>> getAnnoncesByRegionCode(
+            @PathVariable String regionCode,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<Annonce> annonces = annonceService.getAnnoncesByRegionCode(regionCode, pageable);
+        return ResponseEntity.ok(annonces);
     }
 
     // ✅ Mettre à jour une annonce

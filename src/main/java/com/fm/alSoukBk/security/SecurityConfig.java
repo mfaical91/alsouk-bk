@@ -48,11 +48,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/annonces/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        //.requestMatchers("/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/annonces/**").permitAll()     // 1. GET public
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()       //todo to remove
+                        .requestMatchers("/auth/**").permitAll()                          // 2. Auth public
+                        .requestMatchers("/admin/**").hasRole("ADMIN")                    // 3. Admin restreint
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) ->

@@ -21,6 +21,8 @@ public class Annonce {
     private String title;
     private String description;
     private Double price;
+    @Column(name = "region_code")
+    private String regionCode;
     private String location;
     private String category;
     private String imageUrl;
