@@ -1,22 +1,19 @@
 package com.fm.alSoukBk.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 @Table(name = "annonces")
 public class Annonce {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
     private String title;
     private String description;
@@ -28,6 +25,6 @@ public class Annonce {
     private String imageUrl;
     @ManyToOne
     private User user;
-    private boolean isActive = true;
-    private Date createdAt = new Date();
+    private boolean isActive;
+    private LocalDateTime createdAt;
 }

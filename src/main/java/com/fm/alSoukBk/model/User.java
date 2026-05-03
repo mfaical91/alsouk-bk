@@ -9,10 +9,6 @@ import java.util.Set;
 
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
@@ -23,7 +19,6 @@ import java.util.Set;
         })
 public class User {
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -32,6 +27,7 @@ public class User {
 
     @Column(columnDefinition = "VARCHAR(255) CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'")
     private String email;
+
 
     @Column(nullable = false)
     private String password;

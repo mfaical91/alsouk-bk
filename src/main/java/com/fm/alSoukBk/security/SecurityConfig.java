@@ -49,7 +49,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(HttpMethod.GET, "/annonces/**").permitAll()     // 1. GET public
+                        .requestMatchers(HttpMethod.GET, "/api/annonces/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/annonces/search/**").permitAll()  // 1. GET public
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()       //todo to remove
                         .requestMatchers("/auth/**").permitAll()                          // 2. Auth public
                         .requestMatchers("/admin/**").hasRole("ADMIN")                    // 3. Admin restreint
