@@ -47,19 +47,34 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(HttpMethod.GET, "/api/annonces/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/annonces/search/**").permitAll()  // 1. GET public
-                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()       //todo to remove
-                        .requestMatchers("/auth/**").permitAll()                          // 2. Auth public
-                        .requestMatchers("/admin/**").hasRole("ADMIN")                    // 3. Admin restreint
-                        .anyRequest().authenticated())
+                        // 🔓 PUBLIC
+                        .requestMatchers(HttpMethod.GET, "/api/annonces/search/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/annonces/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+
+                        // 🔐 ADMIN
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // 🔐 USER CONNECTÉ
+                        .requestMatchers("/api/annonces/me").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/annonces").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/annonces/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/annonces/**").authenticated()
+
+                        // 🔐 DEFAULT
+                        .anyRequest().authenticated()
+                )
+
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+                )
 
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

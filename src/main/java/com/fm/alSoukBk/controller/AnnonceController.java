@@ -3,13 +3,17 @@ package com.fm.alSoukBk.controller;
 import com.fm.alSoukBk.dto.AnnonceRequestDTO;
 import com.fm.alSoukBk.dto.AnnonceResponseDTO;
 import com.fm.alSoukBk.dto.PageResponseDTO;
+import com.fm.alSoukBk.model.User;
 import com.fm.alSoukBk.service.AnnonceService;
+import com.fm.alSoukBk.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -20,9 +24,11 @@ import java.util.List;
 public class AnnonceController {
 
     private final AnnonceService annonceService;
+    private final UserService   userService;
 
-    public AnnonceController(AnnonceService annonceService) {
+    public AnnonceController(AnnonceService annonceService, UserService userService) {
         this.annonceService = annonceService;
+        this.userService = userService;
     }
 
     @PostMapping
@@ -74,32 +80,16 @@ public class AnnonceController {
         PageResponseDTO<AnnonceResponseDTO> response = new PageResponseDTO<>(page);
         return ResponseEntity.ok(response);
     }
-
-
-    
-
-}
-
-        /*
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping("/{id}")
     public ResponseEntity<AnnonceResponseDTO> updateAnnonce(
             @PathVariable Long id,
-            @Valid @ModelAttribute AnnonceRequestDTO requestDTO,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile,
+            @RequestBody AnnonceRequestDTO dto,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        try {
-            User user = userService.getUserEntity(userDetails);
-            AnnonceResponseDTO response = annonceService.updateAnnonce(id, requestDTO, user, imageFile);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            log.warn("Erreur de validation: {}", e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (IOException e) {
-            log.error("Erreur technique lors de la mise à jour", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        User user = userService.getUserEntity(userDetails);
+        return ResponseEntity.ok(annonceService.updateAnnonce(id, dto, user));
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAnnonce(
@@ -107,19 +97,19 @@ public class AnnonceController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         User user = userService.getUserEntity(userDetails);
-        annonceService.deleteAnnonce(id, user);
+
+        annonceService.deleteAnnonceByOwner(id, user);
+
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/valider")
-    public ResponseEntity<AnnonceResponseDTO> validateAnnonce(@PathVariable Long id) {
-        AnnonceResponseDTO response = annonceService.validerAnnonce(id);
-        return ResponseEntity.ok(response);
-    }
+    @GetMapping("/me")
+    public ResponseEntity<List<AnnonceResponseDTO>> getMyAnnonces(
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-    @PutMapping("/{id}/refuser")
-    public ResponseEntity<AnnonceResponseDTO> refuseAnnonce(@PathVariable Long id) {
-        AnnonceResponseDTO response = annonceService.refuserAnnonce(id);
-        return ResponseEntity.ok(response);
+        User user = userService.getUserEntity(userDetails);
+
+        return ResponseEntity.ok(annonceService.findByUser(user));
     }
-}   */
+}
+
